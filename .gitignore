@@ -1,0 +1,3 @@
+graph/*.png
+db/*.csv
+slackbot_settings.py

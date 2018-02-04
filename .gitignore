@@ -1,3 +1,5 @@
 graph/*.png
 db/*.csv
 slackbot_settings.py
+__pycache__/*
+plugin/__pycache__/*

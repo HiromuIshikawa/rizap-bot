@@ -16,24 +16,22 @@ from pprint import pprint
 ### bot method
 @listen_to('グラフ')
 def graph(message):
-    message.reply('グラフを表示します．')
+    message.reply('体重の増減をグラフにしちゃるけん，ちょいまち！')
     users = message.channel._client.users
-    print("===========================================================")
     # names = [user["real_name"] for k,user in users.items() if user['is_bot'] != True and user['name'] != 'slackbot']
     names = ["hiromu","yui"]
     dfs = [_create_df(name) for name in names]
     dfs = list(map(_add_change_cols, dfs))
-    print(dfs)
     df_merged = dfs[0].join(dfs[1:], how='outer')
-    print(df_merged)
     plt.style.use('seaborn-pastel')
-    ax = df_merged.plot(y=['hiromu','yui'], ylim=[-10,10], style=['-o','-o'])
-    ax.xaxis.set_major_locator(dates.DayLocator(interval=2))
+    ax = df_merged.plot(y=['hiromu','yui'], ylim=[-10,10], style=['-','-'], xlim=[df_merged.index[0], df_merged.index[0] + datetime.timedelta(weeks=10)])
+    ax.xaxis.set_major_locator(dates.WeekdayLocator(interval=2))
     # set formatter
     ax.xaxis.set_major_formatter(dates.DateFormatter('%m/%d\n%a'))
     # set font and rotation for date tick labels
     plt.gcf().autofmt_xdate()
-
+    xmin, xmax, ymin, ymax = plt.axis()
+    plt.hlines([0], xmin, xmax, colors="m", linestyle=":", lw=1)
     plt.savefig("graph/all.png")
 
     cwd = os.path.abspath(os.path.dirname(__file__))
@@ -50,8 +48,8 @@ def personal_graph(message):
 
     plt.style.use('seaborn-pastel')
 
-    ax = df.plot(y='weight_{}'.format(name), style=['-o'])
-    ax.xaxis.set_major_locator(dates.DayLocator(interval=2))
+    ax = df.plot(y='weight_{}'.format(name), style=['-o'], xlim=[df.index[0], df.index[0] + datetime.timedelta(weeks=10)])
+    ax.xaxis.set_major_locator(dates.WeekdayLocator(interval=2))
     # set formatter
     ax.xaxis.set_major_formatter(dates.DateFormatter('%m/%d\n%a'))
     # set font and rotation for date tick labels
